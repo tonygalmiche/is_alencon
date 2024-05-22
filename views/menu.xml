@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Parc des presses -->
+        <record model="ir.actions.client" id="parc_presse_actions_client">
+            <field name="name">Parc des presses</field>
+            <field name="tag">is_alencon.parc_presse_registry</field>
+        </record>
+        <record id="parc_presse_menu" model="ir.ui.menu" >
+            <field name="name">Parc des presses</field>
+            <field name="sequence">39</field>
+            <field name="parent_id" eval="ref('is_plastigray16.is_theia_root_menu')"/>
+            <field name="action"    ref="parc_presse_actions_client"/>
+         </record>
+    
+
+        <!-- Déplacement des menus standards sous le menu 'Autre' -->
+        <menuitem id="autre_theia_menu" sequence="90"  name="THEIA" groups="base.group_system" parent="is_plastigray16.menu_is_autre"/>
+        <menuitem id="is_plastigray16.is_capteur_main_menu"        parent="autre_theia_menu"/>
+        <menuitem id="is_plastigray16.is_donnee_machine_main_menu" parent="autre_theia_menu"/>
+    </data>
+</odoo>

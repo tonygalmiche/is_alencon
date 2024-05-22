@@ -1,0 +1,71 @@
+.parcpresse {
+    background-color:  #e5e7e9 ;
+}
+
+.parcpresse .presse{
+    font-size: 9pt;
+    font-weight: bold;
+    text-align:center;
+    padding:0.4em;
+}
+
+.parcpresse .presse table{
+    border:2px solid black;
+    background-color: white;
+    height:100%;
+    width: 100%;
+    padding:0;
+}
+
+.parcpresse .presse td{
+    border:1px solid black;
+    text-align:center;
+    color:black;
+}
+
+
+.parcpresse .presse .titre{
+    font-size: 13pt;
+    font-weight: bold;
+    line-height: 80%;
+
+}
+
+
+.parcpresse .presse .valeur{
+    font-size: 11pt;
+    font-weight: bold;
+    color:red;
+    line-height: 80%;
+}
+
+
+
+.parc table{
+    border-top:2px solid black;
+    height:100%;
+    width: 100%;
+    padding:0;
+}
+
+.parc td{
+    text-align:center;
+    color:black;
+    font-size: 11pt;
+    font-weight: bold;
+    line-height: 80%;
+    border:0;
+    vertical-align: middle;
+}
+
+
+.parc .compteur{
+    text-align:center;
+    color:black;
+    font-size: 40pt;
+    font-weight: bold;
+    line-height: 80%;
+    background-color: red;
+    padding: 0.2em;
+    height:100%;
+}

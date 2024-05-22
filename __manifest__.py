@@ -16,9 +16,15 @@ Module Odoo 16 pour Alençon
     ],
     "data" : [
         "views/is_theia_view.xml",
+        "views/menu.xml",
     ], 
     "qweb": [
     ],
+    "assets": {
+        'web.assets_backend': [
+            'is_alencon/static/src/**/*',
+         ],
+    },
     "installable": True,
     "application": True,
     "license": "LGPL-3",

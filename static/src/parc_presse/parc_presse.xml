@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="is_alencon.parc_presse_template" owl="1">
+        <style>
+            .o_control_panel{
+                display: none;
+            }
+        </style>
+        <Layout display="display">
+            <div class="row parcpresse" style="height:85vh;--gutter-x:0px">
+                <t t-foreach="Object.values(state.equipements or {})" t-as="e" t-key="e.key">
+                    <div class="h-7 col-4 presse">
+                        <table>
+                            <tr>
+                                <td t-att-style="e.etat_style" class="titre"><t t-esc="e.designation"/></td>
+                                <td t-att-style="e.etat_style" class="titre" colspan="2"><t t-esc="e.etat"/></td>
+                            </tr>
+
+                            <tr>
+                                <td style="width:33%">Cycle : <span class="valeur" t-esc="e.cycle"/></td>
+                                <td style="width:34%">Fct :   <span class="valeur" t-esc="e.fct"/></td>
+                                <td style="width:33%">Rebut : <span class="valeur" t-esc="e.rebut"/></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" t-att-style="'width: '+e.avance+'%;'" t-att-aria-valuenow="e.avance" aria-valuemin="0" aria-valuemax="100"><t t-esc="e.avance"/>%</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </div>
+            <div style="height:10vh; background-color:#c4dbf0;--gutter-x:0px" class="parc" >
+                <table>
+                    <tr>
+                        <td style="width:10%"></td>
+                        <td style="width:20%">TAUX CYCLE</td>
+                        <td style="width:10%"></td>
+                        <td style="width:20%">TAUX FONCTIONNEMENT</td>
+                        <td style="width:10%"></td>
+                        <td style="width:20%">TAUX REBUT</td>
+                        <td style="width:10%"></td>
+                    </tr>
+                    <tr>
+                        <td/>
+                        <td><div class="compteur">95%</div></td>
+                        <td/>
+                        <td><div class="compteur">95%</div></td>
+                        <td/>
+                        <td><div class="compteur">95%</div></td>
+                        <td/>
+                    </tr>
+                </table>
+            </div>
+        </Layout>
+    </t>
+</templates>
