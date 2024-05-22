@@ -69,3 +69,52 @@
     padding: 0.2em;
     height:100%;
 }
+
+
+@media (min-height: 400px) {
+    .parcpresse .presse{
+        font-size: 7pt;
+    }
+    .parcpresse .presse .titre{
+        font-size: 7pt;    
+    }
+    .parcpresse .presse .valeur{
+        font-size: 8pt;
+    }
+    .parc .compteur{
+        font-size: 10pt;
+    }
+}
+  
+
+@media (min-height: 600px) {
+    .parcpresse .presse{
+        font-size: 8pt;
+    }
+    .parcpresse .presse .titre{
+        font-size: 10pt;    
+    }
+    .parcpresse .presse .valeur{
+        font-size: 10pt;
+    }
+    .parc .compteur{
+        font-size: 30pt;
+    }
+}
+  
+
+@media (min-height: 800px) {
+    .parcpresse .presse{
+        font-size: 9pt;
+    }
+    .parcpresse .presse .titre{
+        font-size: 13pt;    
+    }
+    .parcpresse .presse .valeur{
+        font-size: 11pt;
+    }
+    .parc .compteur{
+        font-size: 40pt;
+    }
+}
+  
