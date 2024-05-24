@@ -1,43 +1,177 @@
 # -*- coding: utf-8 -*-
 from odoo import models,fields,api,tools
+from datetime import datetime
+from dateutil import tz
 import random
+
 
 class is_equipement(models.Model):
     _inherit = 'is.equipement'
 
 
     def get_parc_presse(self):
-        print('get_parc_presse', self)
+        cr = self._cr
+        FRA = tz.gettz('Europe/Paris')
+        now    = datetime.now()
+        now_local = now.astimezone(tz=FRA)
 
+        #** Rechecher des états à exclure *************************************
+        etats=(
+            'ABSENCE CHARGE PLANNING',
+            'ESSAI MÉTHODES',
+            'PRÉPARATION POSTE',
+            'CHANGEMENT MOULE',
+            'CHANGEMENT VERSION',
+            'MAINTENANCE PRÉVENTIVE MOULE N1',
+            'MAINTENANCE PRÉVENTIVE MOULE N2',
+            'MAINTENANCE PRÉVENTIVE PRESSE N1',
+            'MAINTENANCE PRÉVENTIVE PRESSE N2',
+            'MAINTENANCE PREVENTIVE TPM N1',
+        )
+        filtre=[('name5x5','in', etats)]
+        lines = self.env['is.etat.presse'].search(filtre, order="name5x5")
+        etats_ids=[]
+        for line in lines:
+            etats_ids.append(str(line.id))
+        etats_ids = ','.join(etats_ids)
+        #**********************************************************************
 
-        lines = self.env['is.equipement'].search([('ordre','>',0)], order="ordre,numero_equipement")
-
+        filtre=[
+            ('ordre','>',0),
+            #('numero_equipement','=','MENG300T2'),
+        ]
+        lines = self.env['is.equipement'].search(filtre, order="ordre,numero_equipement")
         equipements=[]
         for line in lines:
-            print(line.ordre, line.numero_equipement,line.couleur)
+            filtre=[
+                ('presse_id','=',line.id),
+                ('heure_debut', '!=', False),
+                ('heure_fin', '=', False),
+            ]
+            ofs = self.env['is.of'].search(filtre, order="name desc", limit=1)
+            avance = 0
+            cycle  = 0
+            taux_rebut = 0
+            taux_fonctionnement = 0
+            qt_declaree = qt_rebut = 0
+            if len(ofs)>0:
+                of = ofs[0]
+                if of.qt>0:
+                    avance = int(100 * of.qt_declaree / of.qt)
+                cycle_gamme = of.nb_empreintes*of.cycle_gamme
+                if cycle_gamme>0:
+                    cycle = int(100 * (1 - ((of.cycle_moyen - cycle_gamme)/cycle_gamme)))
+
+
+                #** Durée effective *******************************************
+                duree_effective_totale = 0
+                SQL="""
+                    select id,type_arret_id,date_heure,tps_arret , (date_heure + (interval '1 hour' * tps_arret)) heure_fin 
+                    from is_presse_arret 
+                    where 
+                        presse_id=8 
+                        and (date_heure + (interval '1 hour' * tps_arret))>='%s'
+                        and type_arret_id not in (%s) 
+                    order by id desc
+                    limit 20;
+                """%(of.heure_debut, etats_ids)
+                cr.execute(SQL)
+                result = cr.dictfetchall()
+                ct=0
+                for row in result:
+                    duree = (row['heure_fin'] -  row['date_heure'])
+                    duree_effective = duree
+                    if row['date_heure']<of.heure_debut:
+                        duree_effective = row['heure_fin'] - of.heure_debut
+                    if row['tps_arret']==0 and ct==0:
+                        duree_effective = now - row['date_heure']
+                    ct+=1
+                    duree  = round(duree.total_seconds()/3600,2)
+                    duree_effective = round(duree_effective.total_seconds()/3600,2)
+                    duree_effective_totale += duree_effective
+                duree_effective_totale = round(duree_effective_totale,2)
+                #**************************************************************
+
+                #** Taux de fonctionnement ************************************
+                cadence_horaire =  round(of.nb_empreintes * 3600 / of.cycle_gamme,2)
+                quantite_theorique_effective = cadence_horaire * duree_effective_totale
+                if quantite_theorique_effective>0:
+                    taux_fonctionnement = int(100 * of.qt_declaree / quantite_theorique_effective)
+                #**************************************************************
+
+                #** Taux de rebuts ********************************************
+                if (of.qt_declaree + of.qt_rebut)>0:
+                    qt_declaree = of.qt_declaree
+                    qt_rebut    = of.qt_rebut
+                    taux_rebut  = round(100 * qt_rebut / (qt_declaree + qt_rebut),1)
+                #**************************************************************
+
+                print(line.numero_equipement,ofs[0].name,avance,cycle,duree_effective_totale,cadence_horaire,taux_fonctionnement)
+
+            #** Résultats de la presse ****************************************
             key="%s-%s"%(str(line.ordre).zfill(5),line.numero_equipement)
-
-            cycle  = str(int(100*random.random()))+"%"
-            fct    = str(int(100*random.random()))+"%"
-            rebut  = str(int(100*random.random()))+"%"
-            avance = str(int(100*random.random()))
-
+            numero_equipement = line.numero_equipement.replace('MENG','').replace('MNB','')
             equipements.append({
                 'key'              : key,
                 'ordre'            : line.ordre,
                 'designation'      : line.designation,
-                'numero_equipement': line.numero_equipement,
-                'etat'             : line.etat_presse_id.name5x5,
+                'numero_equipement': numero_equipement,
+                'etat'             : line.etat_presse_id.name5x5 or '',
                 'etat_style'       : 'background-color: %s'%line.couleur,
                 'cycle'            : cycle,
-                'fct'              : fct,
-                'rebut'            : rebut,
+                'fct'              : taux_fonctionnement,
+                'qt_declaree'      : qt_declaree,
+                'qt_rebut'         : qt_rebut,
+                'taux_rebut'       : taux_rebut,
                 'avance'           : avance,
             })
+            #******************************************************************
 
 
-        res={}
-        res['equipements'] = equipements
+        #** Taux de cycle PARC ************************************************
+        cycles=[]
+        for  equipement in equipements:
+            if equipement['cycle']>0:
+                cycles.append(equipement['cycle'])
+        taux_cycle = 0
+        if len(cycles)>0:
+            for cycle in cycles:
+                taux_cycle +=cycle
+            taux_cycle = taux_cycle / len(cycles)
+        taux_cycle = round(taux_cycle)
+        #***********************************************************************
+
+        #** Taux de fonctionnement PARC ****************************************
+        fcts=[]
+        for  equipement in equipements:
+            if equipement['fct']>0:
+                fcts.append(equipement['fct'])
+        taux_fct = 0
+        if len(fcts)>0:
+            for fct in fcts:
+                taux_fct +=fct
+            taux_fct = taux_fct / len(fcts)
+        taux_fct = round(taux_fct)
+        #***********************************************************************
+
+        #** Taux de rebuts PARC ************************************************
+        rebuts=[]
+        total_rebut = total_declaree = taux_rebut = 0
+        for  equipement in equipements:
+            total_rebut    += equipement['qt_rebut']
+            total_declaree += equipement['qt_declaree']
+        if (total_declaree + total_rebut)>0:
+            taux_rebut  = round(100 * total_rebut / (total_declaree + total_rebut),1)
+        #***********************************************************************
+
+        res={
+            'equipements': equipements,
+            'taux_cycle' : taux_cycle,
+            'taux_fct'   : taux_fct,
+            'taux_rebut' : taux_rebut,
+            'now_date'   : now_local.strftime("%d/%m/%Y"),
+            'now_heure'  : now_local.strftime("%H:%M"),
+        }
         return res
 
 

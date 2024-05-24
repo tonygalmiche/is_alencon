@@ -15,11 +15,10 @@
                                 <td t-att-style="e.etat_style" class="titre"><t t-esc="e.designation"/></td>
                                 <td t-att-style="e.etat_style" class="titre" colspan="2"><t t-esc="e.etat"/></td>
                             </tr>
-
                             <tr>
-                                <td style="width:33%">Cycle : <span class="valeur" t-esc="e.cycle"/></td>
-                                <td style="width:34%">Fct :   <span class="valeur" t-esc="e.fct"/></td>
-                                <td style="width:33%">Rebut : <span class="valeur" t-esc="e.rebut"/></td>
+                                <td style="width:33%">Cycle : <span class="valeur"><t t-esc="e.cycle"/>%</span></td>
+                                <td style="width:34%">Fct :   <span class="valeur"><t t-esc="e.fct"/>%</span></td>
+                                <td style="width:33%">Rebut : <span class="valeur"><t t-esc="e.taux_rebut"/>%</span></td>
                             </tr>
                             <tr>
                                 <td colspan="3">
@@ -44,12 +43,12 @@
                         <td style="width:10%"></td>
                     </tr>
                     <tr>
+                        <td><t t-esc="state.now_date"/><br /><br /><t t-esc="state.now_heure"/></td>
+                        <td><div class="compteur"><t t-esc="state.taux_cycle"/>%</div></td>
                         <td/>
-                        <td><div class="compteur">95%</div></td>
+                        <td><div class="compteur"><t t-esc="state.taux_fct"/>%</div></td>
                         <td/>
-                        <td><div class="compteur">95%</div></td>
-                        <td/>
-                        <td><div class="compteur">95%</div></td>
+                        <td><div class="compteur"><t t-esc="state.taux_rebut"/>%</div></td>
                         <td/>
                     </tr>
                 </table>
