@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_is_res_company_indicateur,access_is_res_company_indicateur,model_is_res_company_indicateur,base.group_user,1,1,1,1
+access_is_res_company_indicateur_affichage,access_is_res_company_indicateur_affichage,model_is_res_company_indicateur_affichage,base.group_user,1,1,1,1

@@ -16,14 +16,14 @@
                                 <td t-att-style="e.etat_style" class="titre" colspan="2"><t t-esc="e.etat"/></td>
                             </tr>
                             <tr>
-                                <td style="width:33%">Cycle : <span class="valeur"><t t-esc="e.cycle"/>%</span></td>
-                                <td style="width:34%">Fct :   <span class="valeur"><t t-esc="e.fct"/>%</span></td>
-                                <td style="width:33%">Rebut : <span class="valeur"><t t-esc="e.taux_rebut"/>%</span></td>
+                                <td style="width:33%">Cycle : <span t-if="e.afficher_tx_cycle" class="valeur" t-att-style="e.style_tx_cycle"><t t-esc="e.tx_cycle"/>%</span></td>
+                                <td style="width:34%">Fct :   <span t-if="e.afficher_tx_fct"   class="valeur" t-att-style="e.style_tx_fct">  <t t-esc="e.tx_fct"/>%</span></td>
+                                <td style="width:33%">Rebut : <span t-if="e.afficher_tx_rebut" class="valeur" t-att-style="e.style_tx_rebut"><t t-esc="e.tx_rebut"/>%</span></td>
                             </tr>
                             <tr>
                                 <td colspan="3">
                                     <div class="progress">
-                                        <div class="progress-bar" role="progressbar" t-att-style="'width: '+e.avance+'%;'" t-att-aria-valuenow="e.avance" aria-valuemin="0" aria-valuemax="100"><t t-esc="e.avance"/>%</div>
+                                        <div t-if="e.afficher_tx_avance" class="progress-bar" role="progressbar" t-att-style="e.style_tx_avance" t-att-aria-valuenow="e.tx_avance" aria-valuemin="0" aria-valuemax="100"><t t-esc="e.tx_avance"/>%</div>
                                     </div>
                                 </td>
                             </tr>
@@ -44,11 +44,11 @@
                     </tr>
                     <tr>
                         <td><t t-esc="state.now_date"/><br /><br /><t t-esc="state.now_heure"/></td>
-                        <td><div class="compteur"><t t-esc="state.taux_cycle"/>%</div></td>
+                        <td><div class="compteur" t-att-style="state.style_tx_cycle_parc"><t t-esc="state.tx_cycle_parc"/>%</div></td>
                         <td/>
-                        <td><div class="compteur"><t t-esc="state.taux_fct"/>%</div></td>
+                        <td><div class="compteur" t-att-style="state.style_tx_fct_parc">  <t t-esc="state.tx_fct_parc"/>%</div></td>
                         <td/>
-                        <td><div class="compteur"><t t-esc="state.taux_rebut"/>%</div></td>
+                        <td><div class="compteur" t-att-style="state.style_tx_rebut_parc"><t t-esc="state.tx_rebut_parc"/>%</div></td>
                         <td/>
                     </tr>
                 </table>

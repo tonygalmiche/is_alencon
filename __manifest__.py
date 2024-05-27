@@ -15,9 +15,11 @@ Module Odoo 16 pour Alençon
         "is_plastigray16",
     ],
     "data" : [
+        "security/ir.model.access.csv",
         "views/is_theia_view.xml",
+        "views/res_company_view.xml",
         "views/menu.xml",
-    ], 
+    ],
     "qweb": [
     ],
     "assets": {
