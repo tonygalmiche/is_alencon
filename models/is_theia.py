@@ -3,6 +3,9 @@ from odoo import models,fields,api,tools
 from datetime import datetime
 from dateutil import tz
 import random
+import logging
+_logger = logging.getLogger(__name__)
+
 
 
 class is_equipement(models.Model):
@@ -105,23 +108,48 @@ class is_equipement(models.Model):
                 for row in result:
                     duree = (row['heure_fin'] -  row['date_heure'])
                     duree_effective = duree
+
+
+                    if line.numero_equipement=='MENG80T2':
+                        print('TEST 1',line.numero_equipement,ct,row['id'],row['date_heure'],round(row['tps_arret'],2),duree_effective)
+
+
                     if row['date_heure']<of.heure_debut:
                         duree_effective = row['heure_fin'] - of.heure_debut
                     if row['tps_arret']==0 and ct==0:
                         duree_effective = now - row['date_heure']
-                    ct+=1
+
+
                     duree  = round(duree.total_seconds()/3600,2)
                     duree_effective = round(duree_effective.total_seconds()/3600,2)
                     duree_effective_totale += duree_effective
+
+                    if line.numero_equipement=='MENG80T2':
+                        print('TEST 2',line.numero_equipement,ct,row['id'],row['date_heure'],round(row['tps_arret'],2),round(duree_effective,2),round(duree_effective_totale,2))
+                    ct+=1
+
+
+
                 duree_effective_totale = round(duree_effective_totale,2)
+
+                if line.numero_equipement=='MENG80T2':
+                    print('TEST 3',line.numero_equipement,round(duree_effective_totale,2))
+
+
                 #**************************************************************
 
                 #** Taux de fonctionnement ************************************
-                cadence_horaire =  round(of.nb_empreintes * 3600 / of.cycle_gamme,2)
+                #cadence_horaire =  round(of.nb_empreintes * 3600 / of.cycle_gamme,2)
+                cadence_horaire =  round(3600 / of.cycle_gamme,2)
                 quantite_theorique_effective = cadence_horaire * duree_effective_totale
                 if quantite_theorique_effective>0:
                     tx_fct = int(100 * of.qt_declaree / quantite_theorique_effective)
                 #**************************************************************
+
+
+                msg="%s:%s:duree_effective_total=%s:cadence_horaire=%s:quantite_theorique_effective=%s:tx_fct=%s"%(line.numero_equipement,of.name,duree_effective_totale,cadence_horaire,quantite_theorique_effective,tx_fct)
+                _logger.info(msg)
+
 
                 #** Taux de rebuts ********************************************
                 if (of.qt_declaree + of.qt_rebut)>0:
