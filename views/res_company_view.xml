@@ -32,6 +32,9 @@
                                 </field>
                             </group>    
                         </group>
+                        <group>
+                            <field name="is_coeff_tx_rebut_parc"/> 
+                        </group>
                      </page>
                 </notebook>
             </field>

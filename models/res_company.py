@@ -7,6 +7,7 @@ class res_company(models.Model):
 
     is_indicateur_ids           = fields.One2many('is.res.company.indicateur', 'company_id')
     is_affichage_indicateur_ids = fields.One2many('is.res.company.indicateur.affichage', 'company_id')
+    is_coeff_tx_rebut_parc      = fields.Float('Coefficient Taux de rebut parc', digits=(14,2), default=1)
 
 
 class is_res_company_indicateur(models.Model):

@@ -39,6 +39,7 @@ class is_equipement(models.Model):
         FRA = tz.gettz('Europe/Paris')
         now    = datetime.now()
         now_local = now.astimezone(tz=FRA)
+        company = self.env.user.company_id
 
         #** Rechecher des états à exclure *************************************
         etats=(
@@ -241,7 +242,7 @@ class is_equipement(models.Model):
                 total_rebut    += equipement['qt_rebut']
                 total_declaree += equipement['qt_declaree']
         if (total_declaree + total_rebut)>0:
-            tx_rebut_parc  = round(100 * total_rebut / (total_declaree + total_rebut),1)
+            tx_rebut_parc  = round(company.is_coeff_tx_rebut_parc*100 * total_rebut / (total_declaree + total_rebut),1)
         #***********************************************************************
 
         #** Couleurs des indicateurs **************************************
