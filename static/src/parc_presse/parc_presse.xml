@@ -17,7 +17,21 @@
                             </tr>
                             <tr>
                                 <td style="width:33%">Cycle : <span t-if="e.afficher_tx_cycle" class="valeur" t-att-style="e.style_tx_cycle"><t t-esc="e.tx_cycle"/>%</span></td>
-                                <td style="width:34%">Fct :   <span t-if="e.afficher_tx_fct"   class="valeur" t-att-style="e.style_tx_fct">  <t t-esc="e.tx_fct"/>%</span></td>
+                                <td style="width:34%">Fct :   
+                                    <span 
+                                        t-if="e.afficher_tx_fct"   
+                                        class="valeur info" 
+                                        t-att-style="e.style_tx_fct">  
+                                        <t t-esc="e.tx_fct" title="toto et titi"/>%
+                                        <pre>
+                                            Nb empreintes               : <t t-esc="e.nb_empreintes"/><br />
+                                            Cycle gamme OF              : <t t-esc="e.of_cycle_gamme"/><br />
+                                            Cadence horaire             : <t t-esc="e.cadence_horaire"/><br />
+                                            Quantité théorique éffective: <t t-esc="e.quantite_theorique_effective"/><br />
+                                            Durée effective total       : <t t-esc="e.duree_effective_totale"/><br />
+                                        </pre>
+                                    </span>
+                                </td>
                                 <td style="width:33%">Rebut : <span t-if="e.afficher_tx_rebut" class="valeur" t-att-style="e.style_tx_rebut"><t t-esc="e.tx_rebut"/>%</span></td>
                             </tr>
                             <tr>

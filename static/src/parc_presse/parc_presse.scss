@@ -41,6 +41,39 @@
 
 
 
+
+// Infobulle
+.parcpresse .presse span.info {
+    position: relative;
+    text-decoration: none;
+}
+.parcpresse .presse span.info pre {
+    display: none;
+}
+.parcpresse .presse span.info:hover {
+    background: none; 
+    z-index: 500;
+}
+.parcpresse .presse span.info:hover pre {
+    font-weight: normal;
+    display: inline; 
+    position: absolute;
+    white-space: nowrap; 
+    top: 20px;
+    left: 0px;
+    background: white;
+    color: gray;
+    padding: 3px;
+    border: 1px solid black;
+    border-left: 4px solid black;
+    text-align: left;
+}
+
+
+
+
+
+
 .parc table{
     border-top:2px solid black;
     height:100%;
@@ -69,6 +102,9 @@
     padding: 0.2em;
     height:100%;
 }
+
+
+
 
 
 @media (min-height: 400px) {

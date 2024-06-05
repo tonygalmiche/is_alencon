@@ -80,8 +80,11 @@ class is_equipement(models.Model):
             tx_rebut = 0
             tx_fct = 0
             qt_declaree = qt_rebut = 0
+            nb_empreintes = of_cycle_gamme =  cadence_horaire = quantite_theorique_effective = duree_effective_totale = 0
             if len(ofs)>0:
                 of = ofs[0]
+                of_cycle_gamme = of.cycle_gamme
+                nb_empreintes  = of.nb_empreintes
                 if of.qt>0:
                     tx_avance = int(100 * of.qt_declaree / of.qt)
                 cycle_gamme = of.nb_empreintes*of.cycle_gamme
@@ -148,6 +151,9 @@ class is_equipement(models.Model):
                 #**************************************************************
 
 
+
+
+
                 msg="%s:%s:duree_effective_total=%s:cadence_horaire=%s:quantite_theorique_effective=%s:tx_fct=%s"%(line.numero_equipement,of.name,duree_effective_totale,cadence_horaire,quantite_theorique_effective,tx_fct)
                 _logger.info(msg)
 
@@ -188,6 +194,20 @@ class is_equipement(models.Model):
                 'etat_style'       : 'background-color: %s'%line.couleur,
                 'qt_declaree'      : qt_declaree,
                 'qt_rebut'         : qt_rebut,
+
+                'nb_empreintes'               : nb_empreintes,
+                'of_cycle_gamme'              : of_cycle_gamme,
+                'cadence_horaire'             : round(cadence_horaire,2),
+                'quantite_theorique_effective': round(quantite_theorique_effective,2),
+                'duree_effective_totale'      : round(duree_effective_totale,2),
+
+                # #** Taux de fonctionnement ************************************
+                # #cadence_horaire =  round(of.nb_empreintes * 3600 / of.cycle_gamme,2)
+                # cadence_horaire =  round(3600 / of.cycle_gamme,2)
+                # quantite_theorique_effective = cadence_horaire * duree_effective_totale
+                # if quantite_theorique_effective>0:
+                #     tx_fct = int(100 * of.qt_declaree / quantite_theorique_effective)
+                # #**************************************************************
 
                 'tx_avance'        : tx_avance,
                 'tx_cycle'         : tx_cycle,
