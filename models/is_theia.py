@@ -104,7 +104,7 @@ class is_equipement(models.Model):
                         and (date_heure + (interval '1 hour' * tps_arret))>='%s'
                         and type_arret_id not in (%s) 
                     order by id desc
-                    limit 20;
+                    -- limit 20;
                 """%(line.id,of.heure_debut, etats_ids)
                 cr.execute(SQL)
                 result = cr.dictfetchall()
