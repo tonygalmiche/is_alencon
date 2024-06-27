@@ -18,6 +18,7 @@ Module Odoo 16 pour Alençon
         "security/ir.model.access.csv",
         "views/is_theia_view.xml",
         "views/res_company_view.xml",
+        "views/is_releve_qt_produite_view.xml",
         "views/menu.xml",
     ],
     "qweb": [
