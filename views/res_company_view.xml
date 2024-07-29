@@ -34,6 +34,7 @@
                         </group>
                         <group>
                             <field name="is_coeff_tx_rebut_parc"/> 
+                            <field name="is_dossier_releve_qt_produite"/> 
                         </group>
                      </page>
                 </notebook>

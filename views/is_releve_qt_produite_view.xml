@@ -25,18 +25,27 @@
                         <button 
                             name="voir_lignes_action"
                             string="Voir les lignes"
+                            attrs="{'invisible': [('ligne_ids','=',[])]}"
                             type="object"
                         />
                         <button 
                             name="vers_valide_action"
                             string="Valider"
-                            attrs="{'invisible': [('state', '=', 'valide')]}"
+                            attrs="{'invisible': ['|','|',('state', '=', 'valide'),('alerte','!=',False),('ligne_ids','=',[])]}"
                             type="object"
                             confirm="Voulez-vous vraiment valider cette demande ?"
                         />
                         <field name="state" widget="statusbar"/>
+                        <field name="ligne_ids" invisible="1"/>
                     </header>
                     <sheet>
+                        <div style="background:orange;font-weight: bold;" attrs="{'invisible':[('alerte','=',False)]}">
+                            <field 
+                                name="alerte"
+                                readonly="1" nolabel="1" 
+                                attrs="{'invisible': [('alerte', '=', False)]}"
+                            />
+                        </div>
                         <group>
                             <field name="name"/>
                         </group>
@@ -65,10 +74,13 @@
             <field name="arch" type="xml">
                 <tree decoration-muted="state in ['valide']" decoration-danger="state=='brouillon'">
                     <field name="name"/>
-                    <field name="date_debut"/>
-                    <field name="heure_debut" widget="float_time"/>
-                    <field name="date_fin"/>
-                    <field name="heure_fin"   widget="float_time"/>
+                    <field name="date_debut"       optional="hide"/>
+                    <field name="heure_debut"      optional="hide" widget="float_time"/>
+                    <field name="date_fin"         optional="hide"/>
+                    <field name="heure_fin"        optional="hide"  widget="float_time"/>
+                    <field name="date_heure_debut" optional="show"/>
+                    <field name="date_heure_fin"   optional="show"/>
+                    <field name="alerte"           optional="show"/>
                     <field name="state"/>
                 </tree>
             </field>

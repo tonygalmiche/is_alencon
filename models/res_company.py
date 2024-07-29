@@ -5,9 +5,10 @@ from odoo import models,fields,api
 class res_company(models.Model):
     _inherit = 'res.company'
 
-    is_indicateur_ids           = fields.One2many('is.res.company.indicateur', 'company_id')
-    is_affichage_indicateur_ids = fields.One2many('is.res.company.indicateur.affichage', 'company_id')
-    is_coeff_tx_rebut_parc      = fields.Float('Coefficient Taux de rebut parc', digits=(14,2), default=1)
+    is_indicateur_ids             = fields.One2many('is.res.company.indicateur', 'company_id')
+    is_affichage_indicateur_ids   = fields.One2many('is.res.company.indicateur.affichage', 'company_id')
+    is_coeff_tx_rebut_parc        = fields.Float('Coefficient Taux de rebut parc', digits=(14,2), default=1)
+    is_dossier_releve_qt_produite = fields.Char("Dossier 'Relevé des qt produites'")
 
 
 class is_res_company_indicateur(models.Model):
@@ -28,7 +29,6 @@ class is_res_company_indicateur(models.Model):
         ("tx_rebut_parc", "Taux de Rebut Parc"),
     ], string="Indicateur")
     color = fields.Char("Couleur")
-
 
 
 class is_res_company_indicateur_affichage(models.Model):

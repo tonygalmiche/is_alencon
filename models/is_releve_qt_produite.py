@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from odoo import models,fields,api
+from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta
 import pytz
 import csv
 import base64
+import shutil
 
 
 class is_releve_qt_produite(models.Model):
@@ -18,11 +20,62 @@ class is_releve_qt_produite(models.Model):
     date_fin    = fields.Date("Date de fin"            ,required=True, tracking=True)
     heure_debut = fields.Float("Heure de début(>=) (HH:MM)",required=True, tracking=True)
     heure_fin   = fields.Float("Heure de fin (<) (HH:MM)"  ,required=True, tracking=True)
+    date_heure_debut  = fields.Datetime("Date heure de début", compute='_compute_date_heure',store=True,readonly=True,index=True)
+    date_heure_fin    = fields.Datetime("Date heure de fin"  , compute='_compute_date_heure',store=True,readonly=True,index=True)
     state       = fields.Selection([
         ('brouillon', 'Brouillon'),
         ('valide'   , 'Validé'),
     ], "Etat", default="brouillon", tracking=True)
     ligne_ids = fields.One2many('is.releve.qt.produite.ligne', 'releve_id', 'Lignes', tracking=True)
+    alerte    = fields.Text('Alerte', compute='_compute_alerte')
+
+
+    @api.depends('date_debut','date_fin','heure_debut','heure_fin')
+    def _compute_date_heure(self):
+        for obj in self:
+
+ 
+            date_heure_debut = date_heure_fin = False
+            if obj.date_debut and obj.heure_debut:
+                date_heure_debut = self.get_date_utc(obj.date_debut, obj.heure_debut)
+            if obj.date_fin and obj.heure_fin:
+                date_heure_fin = self.get_date_utc(obj.date_fin, obj.heure_fin)
+            obj.date_heure_debut = date_heure_debut
+            obj.date_heure_fin   = date_heure_fin
+
+
+    @api.depends('date_debut','date_fin','heure_debut','heure_fin')
+    def _compute_alerte(self):
+        for obj in self:
+            if obj.date_heure_debut>=obj.date_heure_fin:
+                alerte = "Date de début > Date de fin"
+            else:
+                alertes=[]
+                domain=[
+                    ('date_heure_debut','<=', obj.date_heure_fin),
+                    ('date_heure_debut','>=', obj.date_heure_debut),
+                ]
+                lines = self.env['is.releve.qt.produite'].search(domain)
+                for line in lines:
+                    if line.name not in alertes and line.name!=obj.name:
+                        alertes.append(line.name)
+
+
+                if alertes==[]:
+                    alerte=False
+                else:
+                    alerte = "Date heure déjà prisent en compte dans les relevés : %s"%','.join(alertes)
+            obj.alerte=alerte
+
+
+    def get_date_utc(self,ladate,heure):
+        HH = str(int(heure)).zfill(2)
+        MM = str(round((heure - int(heure))*60)).zfill(2)
+        date_str = '%s %s:%s:00'%(ladate,HH,MM)
+        date_locale = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+        offset = int(pytz.timezone('Europe/Paris').localize(date_locale).utcoffset().total_seconds()/3600)
+        date_utc = date_locale - timedelta(hours=offset)
+        return date_utc
 
 
     @api.model_create_multi
@@ -73,16 +126,8 @@ class is_releve_qt_produite(models.Model):
                     io.qt
                 ORDER BY ie.ordre,io.name
             """
-            def get_date_utc(ladate,heure):
-                HH = str(int(heure)).zfill(2)
-                MM = str(round((heure - int(heure))*60)).zfill(2)
-                date_str = '%s %s:%s:00'%(ladate,HH,MM)
-                date_locale = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-                offset = int(pytz.timezone('Europe/Paris').localize(date_locale).utcoffset().total_seconds()/3600)
-                date_utc = date_locale - timedelta(hours=offset)
-                return date_utc
-            date_debut = get_date_utc(obj.date_debut, obj.heure_debut)
-            date_fin   = get_date_utc(obj.date_fin  , obj.heure_fin)
+            date_debut = self.get_date_utc(obj.date_debut, obj.heure_debut)
+            date_fin   = self.get_date_utc(obj.date_fin  , obj.heure_fin)
             cr.execute(SQL,[date_debut,date_fin])
             rows = cr.dictfetchall()
             ct=1
@@ -231,6 +276,18 @@ class is_releve_qt_produite(models.Model):
             else:
                 attachment = attachment_obj.create(vals)
             #******************************************************************
+
+            #** Copie du fichier sur le serveur *******************************
+            company = self.env.user.company_id
+            if company.is_dossier_releve_qt_produite:
+                src = "/tmp/%s"%filename
+                dst = "%s/%s"%(company.is_dossier_releve_qt_produite,filename)
+                try:
+                    shutil.copy(src,dst)
+                except Exception:
+                    raise ValidationError('Impossible de copier le fichier dans %s'%dst)
+            #******************************************************************
+
             obj.state="valide"
 
 
