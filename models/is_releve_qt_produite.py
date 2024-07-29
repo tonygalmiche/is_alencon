@@ -33,12 +33,10 @@ class is_releve_qt_produite(models.Model):
     @api.depends('date_debut','date_fin','heure_debut','heure_fin')
     def _compute_date_heure(self):
         for obj in self:
-
- 
             date_heure_debut = date_heure_fin = False
-            if obj.date_debut and obj.heure_debut:
+            if obj.date_debut:
                 date_heure_debut = self.get_date_utc(obj.date_debut, obj.heure_debut)
-            if obj.date_fin and obj.heure_fin:
+            if obj.date_fin:
                 date_heure_fin = self.get_date_utc(obj.date_fin, obj.heure_fin)
             obj.date_heure_debut = date_heure_debut
             obj.date_heure_fin   = date_heure_fin
@@ -47,24 +45,24 @@ class is_releve_qt_produite(models.Model):
     @api.depends('date_debut','date_fin','heure_debut','heure_fin')
     def _compute_alerte(self):
         for obj in self:
-            if obj.date_heure_debut>=obj.date_heure_fin:
-                alerte = "Date de début > Date de fin"
-            else:
-                alertes=[]
-                domain=[
-                    ('date_heure_debut','<=', obj.date_heure_fin),
-                    ('date_heure_debut','>=', obj.date_heure_debut),
-                ]
-                lines = self.env['is.releve.qt.produite'].search(domain)
-                for line in lines:
-                    if line.name not in alertes and line.name!=obj.name:
-                        alertes.append(line.name)
-
-
-                if alertes==[]:
-                    alerte=False
+            alerte=False
+            if obj.date_heure_debut and obj.date_heure_fin:
+                if obj.date_heure_debut>=obj.date_heure_fin:
+                    alerte = "Date de début > Date de fin"
                 else:
-                    alerte = "Date heure déjà prisent en compte dans les relevés : %s"%','.join(alertes)
+                    alertes=[]
+                    domain=[
+                        ('date_heure_debut','<=', obj.date_heure_fin),
+                        ('date_heure_debut','>=', obj.date_heure_debut),
+                    ]
+                    lines = self.env['is.releve.qt.produite'].search(domain)
+                    for line in lines:
+                        if line.name not in alertes and line.name!=obj.name:
+                            alertes.append(line.name)
+                    if alertes==[]:
+                        alerte=False
+                    else:
+                        alerte = "Date heure déjà prisent en compte dans les relevés : %s"%','.join(alertes)
             obj.alerte=alerte
 
 
