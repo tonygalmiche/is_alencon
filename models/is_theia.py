@@ -64,9 +64,9 @@ class is_equipement(models.Model):
 
         filtre=[
             ('ordre','>',0),
-            #('numero_equipement','=','MENG300T2'),
+            #('designation','like','85T'),
         ]
-        lines = self.env['is.equipement'].search(filtre, order="ordre,numero_equipement",limit=60)
+        lines = self.env['is.equipement'].search(filtre, order="ordre,numero_equipement",limit=300)
         equipements=[]
         for line in lines:
             filtre=[

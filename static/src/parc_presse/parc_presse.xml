@@ -16,7 +16,7 @@
                                 <td t-att-style="e.etat_style" class="num_presse"><t t-esc="e.designation"/></td>
                                 <td t-att-style="e.etat_style" class="titre" colspan="2"><t t-esc="e.etat"/></td>
                             </tr>
-                            <tr style="vertical-align: bottom;">
+                            <tr style="vertical-align: center;">
                                 <td style="width:33%" class="tdvaleur">
                                     <!-- <span class="valeur"> </span> -->
                                     <div t-if="e.afficher_tx_cycle" >Cycle:</div>
@@ -26,7 +26,7 @@
                                 </td>
                                 <td style="width:34%" class="tdvaleur">
                                     <!-- <span class="valeur"> </span> -->
-                                    <div t-if="e.afficher_tx_cycle" >Fct:</div>
+                                    <div t-if="e.afficher_tx_fct" >Fct:</div>
                                     <div t-if="e.afficher_tx_fct" style="valeur">
                                         <span 
                                             class="valeur info" 
@@ -44,7 +44,7 @@
                                 </td>
                                 <td style="width:33%" class="tdvaleur">
                                     <!-- <span class="valeur"> </span> -->
-                                    <div t-if="e.afficher_tx_cycle" >Rebut:</div>
+                                    <div t-if="e.afficher_tx_rebut" >Rebut:</div>
                                     <div t-if="e.afficher_tx_rebut" class="valeur" t-att-style="e.style_tx_rebut">
                                         <t t-esc="e.tx_rebut"/>%
                                     </div>
@@ -65,13 +65,13 @@
             <div style="background-color:#c4dbf0;--gutter-x:0px" class="parc" >
                 <table>
                     <tr>
-                        <td style="width:10%"></td>
-                        <td style="width:20%">TAUX CYCLE</td>
-                        <td style="width:10%"></td>
-                        <td style="width:20%">TAUX FONCTIONNEMENT</td>
-                        <td style="width:10%"></td>
-                        <td style="width:20%">TAUX REBUT</td>
-                        <td style="width:10%"></td>
+                        <td style="width:15%"></td>
+                        <td style="width:25%">TAUX CYCLE</td>
+                        <td style="width:2%"></td>
+                        <td style="width:25%">TAUX FONCTIONNEMENT</td>
+                        <td style="width:2%"></td>
+                        <td style="width:25%">TAUX REBUT</td>
+                        <td style="width:2%"></td>
                     </tr>
                     <tr>
                         <td><t t-esc="state.now_date"/><br /><br /><t t-esc="state.now_heure"/></td>
