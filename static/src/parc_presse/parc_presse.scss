@@ -27,7 +27,7 @@
 .parcpresse .presse .titre{
     font-size: 13pt;
     font-weight: bold;
-    line-height: 95%;
+    line-height: 120%;
 }
 
 
@@ -159,22 +159,22 @@
 
 @media (min-height: 1400px) {
     .parcpresse .presse{
-        font-size: 14pt;
+        font-size: 18pt;
     }
     .parcpresse .presse .num_presse{
         font-size: 56pt;    
-        height: 140px;
+        height: 180px;
     }
     .parcpresse .presse .titre{
         font-size: 36pt;  
     }
     .parcpresse .presse .valeur{
-        font-size: 48pt;
-        line-height: 80%;
+        font-size: 60pt;
+        line-height: 120%;
     }
 
     .parcpresse .presse .tdvaleur{
-        height: 54pt;
+        height: 90pt;
         // line-height: 120%;
     }
     
@@ -189,10 +189,16 @@
         height: 20pt;
     }
 
+
+ 
+
     
+    .parc td{
+        font-size: 20pt;
+    }
 
     .parc .compteur{
-        font-size: 80pt;
+        font-size: 100pt;
     }
 }
   
