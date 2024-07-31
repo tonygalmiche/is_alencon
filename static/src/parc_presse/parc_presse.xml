@@ -7,17 +7,19 @@
             }
         </style>
         <Layout display="display">
-            <div class="row parcpresse" style="height:85vh;--gutter-x:0px">
+            <!-- <div class="row parcpresse" style="height:85vh;"> -->
+            <div class="row parcpresse" style="--gutter-x:0px">
                 <t t-foreach="Object.values(state.equipements or {})" t-as="e" t-key="e.key">
                     <div class="h-7 col-4 presse">
                         <table>
-                            <tr>
-                                <td t-att-style="e.etat_style" class="titre"><t t-esc="e.designation"/></td>
+                            <tr style="max-height:36px">
+                                <td t-att-style="e.etat_style" class="num_presse"><t t-esc="e.designation"/></td>
                                 <td t-att-style="e.etat_style" class="titre" colspan="2"><t t-esc="e.etat"/></td>
                             </tr>
-                            <tr>
-                                <td style="width:33%">Cycle : <span t-if="e.afficher_tx_cycle" class="valeur" t-att-style="e.style_tx_cycle"><t t-esc="e.tx_cycle"/>%</span></td>
-                                <td style="width:34%">Fct :   
+                            <tr style="vertical-align: bottom;">
+                                <td style="width:33%" class="tdvaleur"><span class="valeur"> </span>Cycle:<span t-if="e.afficher_tx_cycle" class="valeur" t-att-style="e.style_tx_cycle"><t t-esc="e.tx_cycle"/>%</span></td>
+                                <td style="width:34%" class="tdvaleur">
+                                    <span class="valeur"> </span>Fct: 
                                     <span 
                                         t-if="e.afficher_tx_fct"   
                                         class="valeur info" 
@@ -32,10 +34,10 @@
                                         </pre>
                                     </span>
                                 </td>
-                                <td style="width:33%">Rebut : <span t-if="e.afficher_tx_rebut" class="valeur" t-att-style="e.style_tx_rebut"><t t-esc="e.tx_rebut"/>%</span></td>
+                                <td style="width:33%" class="tdvaleur"><span class="valeur"> </span>Rebut:<span t-if="e.afficher_tx_rebut" class="valeur" t-att-style="e.style_tx_rebut"><t t-esc="e.tx_rebut"/>%</span></td>
                             </tr>
                             <tr>
-                                <td colspan="3">
+                                <td colspan="3" class="tdprogress">
                                     <div class="progress">
                                         <div t-if="e.afficher_tx_avance" class="progress-bar" role="progressbar" t-att-style="e.style_tx_avance" t-att-aria-valuenow="e.tx_avance" aria-valuemin="0" aria-valuemax="100"><t t-esc="e.tx_avance"/>%</div>
                                     </div>
@@ -45,7 +47,8 @@
                     </div>
                 </t>
             </div>
-            <div style="height:10vh; background-color:#c4dbf0;--gutter-x:0px" class="parc" >
+            <!-- <div style="height:10vh; background-color:#c4dbf0;" class="parc" > -->
+            <div style="background-color:#c4dbf0;--gutter-x:0px" class="parc" >
                 <table>
                     <tr>
                         <td style="width:10%"></td>

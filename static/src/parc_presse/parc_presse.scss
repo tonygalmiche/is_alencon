@@ -36,7 +36,7 @@
     font-size: 13pt;
     font-weight: bold;
     color:green;
-    line-height: 80%;
+    // line-height: 80%;
 }
 
 
@@ -139,18 +139,57 @@
 }
   
 
-@media (min-height: 800px) {
+// @media (min-height: 800px) {
+//     .parcpresse .presse{
+//         font-size: 9pt;
+//     }
+//     .parcpresse .presse .titre{
+//         font-size: 13pt;    
+//     }
+//     .parcpresse .presse .valeur{
+//         font-size: 13pt;
+//     }
+//     .parc .compteur{
+//         font-size: 40pt;
+//     }
+// }
+  
+
+@media (min-height: 1400px) {
     .parcpresse .presse{
-        font-size: 9pt;
+        font-size: 8pt;
+    }
+    .parcpresse .presse .num_presse{
+        font-size: 56pt;    
+        // height: 180px;
     }
     .parcpresse .presse .titre{
-        font-size: 13pt;    
+        font-size: 36pt;  
     }
     .parcpresse .presse .valeur{
-        font-size: 13pt;
-    }
-    .parc .compteur{
         font-size: 40pt;
+    }
+
+    .parcpresse .presse .tdvaleur{
+        height: 40pt;
+        line-height: 80%;
+    }
+    
+
+    // .parcpresse .presse .tdprogress{
+    //     height: 60px;
+    // }
+    
+
+    .parcpresse .presse .progress{
+        font-size: 24pt;
+        height: 24pt;
+    }
+
+    
+
+    .parc .compteur{
+        font-size: 60pt;
     }
 }
   
