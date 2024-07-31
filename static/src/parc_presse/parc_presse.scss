@@ -27,8 +27,7 @@
 .parcpresse .presse .titre{
     font-size: 13pt;
     font-weight: bold;
-    line-height: 80%;
-
+    line-height: 95%;
 }
 
 
@@ -86,7 +85,7 @@
     color:black;
     font-size: 11pt;
     font-weight: bold;
-    line-height: 80%;
+    // line-height: 80%;
     border:0;
     vertical-align: middle;
 }
@@ -97,7 +96,7 @@
     color:black;
     font-size: 40pt;
     font-weight: bold;
-    line-height: 80%;
+    // line-height: 80%;
     background-color: red;
     padding: 0.2em;
     height:100%;
@@ -139,40 +138,44 @@
 }
   
 
-// @media (min-height: 800px) {
-//     .parcpresse .presse{
-//         font-size: 9pt;
-//     }
-//     .parcpresse .presse .titre{
-//         font-size: 13pt;    
-//     }
-//     .parcpresse .presse .valeur{
-//         font-size: 13pt;
-//     }
-//     .parc .compteur{
-//         font-size: 40pt;
-//     }
-// }
+@media (min-height: 800px) {
+    .parcpresse .presse{
+        font-size: 9pt;
+    }
+    .parcpresse .presse .titre{
+        font-size: 13pt;    
+    }
+    .parcpresse .presse .valeur{
+        font-size: 13pt;
+    }
+    .parc .compteur{
+        font-size: 40pt;
+    }
+}
   
+
+
+// 1400px
 
 @media (min-height: 1400px) {
     .parcpresse .presse{
-        font-size: 8pt;
+        font-size: 14pt;
     }
     .parcpresse .presse .num_presse{
         font-size: 56pt;    
-        // height: 180px;
+        height: 140px;
     }
     .parcpresse .presse .titre{
         font-size: 36pt;  
     }
     .parcpresse .presse .valeur{
-        font-size: 40pt;
+        font-size: 48pt;
+        line-height: 80%;
     }
 
     .parcpresse .presse .tdvaleur{
-        height: 40pt;
-        line-height: 80%;
+        height: 54pt;
+        // line-height: 120%;
     }
     
 
@@ -182,14 +185,14 @@
     
 
     .parcpresse .presse .progress{
-        font-size: 24pt;
-        height: 24pt;
+        font-size: 20pt;
+        height: 20pt;
     }
 
     
 
     .parc .compteur{
-        font-size: 60pt;
+        font-size: 80pt;
     }
 }
   
