@@ -27,7 +27,7 @@
 .parcpresse .presse .titre{
     font-size: 13pt;
     font-weight: bold;
-    line-height: 120%;
+    line-height: 100%;
 }
 
 
@@ -163,7 +163,7 @@
     }
     .parcpresse .presse .num_presse{
         font-size: 56pt;    
-        height: 200px;
+        height: 170px; //200px => 170px
     }
     .parcpresse .presse .titre{
         font-size: 36pt;  
