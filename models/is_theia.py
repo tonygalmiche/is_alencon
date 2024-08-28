@@ -8,6 +8,127 @@ _logger = logging.getLogger(__name__)
 
 
 
+
+class is_of(models.Model):
+    _inherit = 'is.of'
+
+    def bilan_fin_of(self):
+        cr = self._cr
+
+        id_etat_presse=self.get_id_production_serie()
+
+        nb=len(self)
+        ct=0
+        for obj in self:
+            ct=ct+1
+            _logger.info(str(ct)+u"/"+str(nb)+u" - "+obj.name)
+
+            #** Répartition des temps d'arrêt **********************************
+            SQL="""
+                select
+                    ipa.type_arret_id,
+                    sum(ipa.tps_arret)
+                from is_presse_arret ipa inner join is_presse_arret_of_rel ipaof on ipa.id=ipaof.is_of_id
+                                         inner join is_of                     io on ipaof.is_presse_arret_id=io.id
+                where ipaof.is_presse_arret_id="""+str(obj.id)+""" and io.presse_id=ipa.presse_id
+                group by ipa.type_arret_id
+            """
+            cr.execute(SQL)
+            result = cr.fetchall()
+            obj.tps_ids.unlink()
+            tps_prod_serie=0
+            for row in result:
+                vals={
+                    'of_id'         : obj.id,
+                    'etat_presse_id': row[0],
+                    'tps_arret'     : row[1],
+                }
+                if id_etat_presse==row[0]:
+                    tps_prod_serie=row[1]
+                self.env['is.of.tps'].create(vals)
+            #*******************************************************************
+
+            #** Temps de cycle moyen série *************************************
+            if obj.qt_theorique!=0:
+                obj.cycle_moyen_serie=tps_prod_serie*3600/obj.qt_theorique
+            #*******************************************************************
+
+
+            #** Répartition des rebuts *****************************************
+            SQL="""
+                select defaut_id,sum(qt_rebut)::int
+                from is_of_declaration 
+                where of_id="""+str(obj.id)+""" and qt_rebut is not null and defaut_id is not null
+                group by defaut_id;
+            """
+            cr.execute(SQL)
+            result = cr.fetchall()
+            obj.rebut_ids.unlink()
+            for row in result:
+                vals={
+                    'of_id'    : obj.id,
+                    'defaut_id': row[0],
+                    'qt_rebut' : row[1],
+                }
+                id=self.env['is.of.rebut'].create(vals)
+            #*******************************************************************
+
+            #** Quantité déclarée bonne ****************************************
+            SQL="""
+                select sum(qt_bonne)::int
+                from is_of_declaration 
+                where of_id="""+str(obj.id)+""" and qt_bonne is not null
+            """
+            cr.execute(SQL)
+            result = cr.fetchall()
+            for row in result:
+                obj.qt_declaree=row[0]
+            #*******************************************************************
+
+
+            #** Nombre de cycles ***********************************************
+            SQL="""
+                SELECT count(*) as nb
+                FROM is_presse_cycle a inner join is_presse_cycle_of_rel b on id=b.is_of_id
+                WHERE is_presse_cycle_id="""+str(obj.id)+"""
+                GROUP BY b.is_presse_cycle_id
+            """
+            cr.execute(SQL)
+            result = cr.fetchall()
+            for row in result:
+                obj.nb_cycles=row[0]
+            #*******************************************************************
+
+
+            #** Taux de rebuts *************************************************
+            self.get_qt_rebut()
+            qt_bonne = obj.qt_declaree or 0
+            qt_rebut = obj.qt_rebut or 0
+            taux_rebut=0
+            if (qt_bonne+qt_rebut)!=0:
+                taux_rebut=100.0*qt_rebut/(qt_bonne+qt_rebut)
+            obj.taux_rebut=taux_rebut
+
+            qt_theorique   = obj.qt_theorique or 0
+            qt_rebut_theo  = qt_theorique-qt_bonne
+            if qt_rebut_theo<0:
+                qt_rebut_theo=0
+            taux_rebut_theo=0
+            if qt_theorique!=0:
+                taux_rebut_theo=100.0*qt_rebut_theo/qt_theorique
+            obj.qt_rebut_theo   = qt_rebut_theo
+            obj.taux_rebut_theo = taux_rebut_theo
+            #*******************************************************************
+
+            obj.qt_restante = obj.qt - obj.qt_declaree
+
+
+        return []
+
+
+
+
+
 class is_equipement(models.Model):
     _inherit = 'is.equipement'
 
