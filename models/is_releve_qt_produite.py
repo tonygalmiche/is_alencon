@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models,fields,api
 from odoo.exceptions import ValidationError
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pytz
 import csv
 import base64
@@ -83,9 +83,27 @@ class is_releve_qt_produite(models.Model):
         return super().create(vals_list)
 
 
+    def maj_duree_etat(self):
+        "Calcul de la durée de l'état en cours jusqu'à maintenant"
+        cr=self._cr
+        for obj in self:
+            now = datetime.now(tz=timezone.utc).replace(tzinfo=None)
+            domain=[('type_id.code', 'in', ['PE','9000'])]
+            equipements = self.env['is.equipement'].search(domain, order="numero_equipement")
+            for equipement in equipements:
+                domain=[('presse_id', '=', equipement.id)]
+                arrets = self.env['is.presse.arret'].search(domain, order="id desc", limit=1)
+                for arret in arrets:
+                    tps_arret = (now - arret.date_heure).total_seconds()/3600
+                    arret.tps_arret = tps_arret
+        cr.commit()
+
+
     def creer_lignes_action(self):
         cr=self._cr
         for obj in self:
+            obj.maj_duree_etat()
+
             obj.ligne_ids.unlink()
             #** Rechecher des états à inclure *********************************
             filtre=[('couleur','=', 'vert')]
@@ -110,8 +128,7 @@ class is_releve_qt_produite(models.Model):
                 FROM is_of io join is_of_declaration iod on io.id=iod.of_id
                               join is_equipement      ie on io.presse_id=ie.id
                 WHERE 
-                    iod.name>=%s 
-                    and iod.name<%s 
+                    iod.name>=%s and iod.name<%s 
                     -- and io.id=1340
                 GROUP BY
                     ie.ordre,
@@ -147,6 +164,19 @@ class is_releve_qt_produite(models.Model):
 
                 #** Recherche tps production effective ************************
                 duree_effective_totale = 0
+                # SQL="""
+                #     select 
+                #         ipa.date_heure heure_debut,
+                #         (ipa.date_heure + (interval '1 hour' * ipa.tps_arret)) heure_fin,
+                #         ipa.tps_arret
+                #     from is_presse_arret ipa  join is_presse_arret_of_rel rel on ipa.id=rel.is_of_id
+                #     where 
+                #         date_heure>=%s and date_heure<%s and rel.is_presse_arret_id=%s
+                #         and ipa.type_arret_id in ("""+etats_ids+""") 
+                #     order by ipa.id desc
+                # """
+
+
                 SQL="""
                     select 
                         ipa.date_heure heure_debut,
@@ -154,23 +184,40 @@ class is_releve_qt_produite(models.Model):
                         ipa.tps_arret
                     from is_presse_arret ipa  join is_presse_arret_of_rel rel on ipa.id=rel.is_of_id
                     where 
-                        date_heure>=%s and date_heure<%s and rel.is_presse_arret_id=%s
-                        and ipa.type_arret_id in ("""+etats_ids+""") 
+                        (ipa.date_heure + (interval '1 hour' * ipa.tps_arret))>=%s and 
+                        rel.is_presse_arret_id=%s and 
+                        ipa.type_arret_id in ("""+etats_ids+""") 
                     order by ipa.id desc
                 """
-                cr.execute(SQL,[date_debut,date_fin,of_id])
+
+                cr.execute(SQL,[date_debut,of_id])
                 rows2 = cr.dictfetchall()
                 ct=duree_effective_totale=0
                 for row2 in rows2:
                     duree = (row2['heure_fin'] -  row2['heure_debut'])
-                    duree_effective = duree
+                    duree_effective = duree.total_seconds()
+                    #if of_id==1568:
+                    #    print('TEST 1',of_id, row2['heure_debut'],  row2['heure_fin'], duree_effective)
+
                     if row2['heure_debut']<date_debut:
-                        duree_effective = row2['heure_fin'] - date_debut
+                        delta = (date_debut - row2['heure_debut']).total_seconds()
+                        duree_effective = duree_effective - delta
+                        if duree_effective<0:
+                            duree_effective=0
+                        #if of_id==1568:
+                        #    print('TEST 2',of_id, row2['heure_debut'],  row2['heure_fin'], duree_effective)
+
                     if row2['heure_fin']>date_fin:
-                        duree_effective = date_fin-row2['heure_debut']
-                    if row2['tps_arret']==0 and ct==0:
-                        duree_effective = date_fin - row2['heure_debut']
-                    duree_effective = round(duree_effective.total_seconds()/3600,2)
+                        delta = (row2['heure_fin'] - date_fin).total_seconds()
+                        duree_effective = duree_effective - delta
+                        if duree_effective<0:
+                            duree_effective=0
+                        #if of_id==1568:
+                        #    print('TEST 3',of_id, row2['heure_debut'],  row2['heure_fin'], duree_effective)
+
+                    #if row2['tps_arret']==0 and ct==0:
+                    #    duree_effective = date_fin - row2['heure_debut']
+                    duree_effective = round(duree_effective/3600,2)
                     duree_effective_totale += duree_effective
                     ct+=1
                 #**************************************************************
