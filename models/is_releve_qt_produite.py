@@ -18,8 +18,8 @@ class is_releve_qt_produite(models.Model):
     name        = fields.Char('N°relevé', readonly=True, tracking=True)
     date_debut  = fields.Date("Date de début"          ,required=True, tracking=True)
     date_fin    = fields.Date("Date de fin"            ,required=True, tracking=True)
-    heure_debut = fields.Float("Heure de début(>=) (HH:MM)",required=True, tracking=True)
-    heure_fin   = fields.Float("Heure de fin (<) (HH:MM)"  ,required=True, tracking=True)
+    heure_debut = fields.Float("Heure de début(>) (HH:MM)",required=True, tracking=True)
+    heure_fin   = fields.Float("Heure de fin (<=) (HH:MM)"  ,required=True, tracking=True)
     date_heure_debut  = fields.Datetime("Date heure de début", compute='_compute_date_heure',store=True,readonly=True,index=True)
     date_heure_fin    = fields.Datetime("Date heure de fin"  , compute='_compute_date_heure',store=True,readonly=True,index=True)
     state       = fields.Selection([
@@ -128,7 +128,7 @@ class is_releve_qt_produite(models.Model):
                 FROM is_of io join is_of_declaration iod on io.id=iod.of_id
                               join is_equipement      ie on io.presse_id=ie.id
                 WHERE 
-                    iod.name>=%s and iod.name<%s 
+                    iod.name>%s and iod.name<=%s 
                     -- and io.id=1340
                 GROUP BY
                     ie.ordre,
