@@ -51,14 +51,28 @@ class is_releve_qt_produite(models.Model):
                     alerte = "Date de début > Date de fin"
                 else:
                     alertes=[]
+
+                    #** Test date_heure_debut *********************************
                     domain=[
-                        ('date_heure_debut','<=', obj.date_heure_fin),
-                        ('date_heure_debut','>=', obj.date_heure_debut),
+                        ('date_heure_debut','<', obj.date_heure_debut),
+                        ('date_heure_fin'  ,'>', obj.date_heure_debut),
                     ]
                     lines = self.env['is.releve.qt.produite'].search(domain)
                     for line in lines:
                         if line.name not in alertes and line.name!=obj.name:
                             alertes.append(line.name)
+
+                    #** Test date_heure_fin *********************************
+                    domain=[
+                        ('date_heure_debut','<', obj.date_heure_fin),
+                        ('date_heure_fin'  ,'>', obj.date_heure_fin),
+                    ]
+                    lines = self.env['is.releve.qt.produite'].search(domain)
+                    for line in lines:
+                        if line.name not in alertes and line.name!=obj.name:
+                            alertes.append(line.name)
+
+
                     if alertes==[]:
                         alerte=False
                     else:
@@ -262,6 +276,13 @@ class is_releve_qt_produite(models.Model):
     def vers_valide_action(self):
         "Création du fichier d'exportation et validation de la fiche pour bloquer les modifications"
         for obj in self:
+            if obj.state!='brouillon':
+                raise ValidationError('Ce document est déjà validé')
+            if len(obj.ligne_ids)==0:
+                raise ValidationError('Aucune ligne à traiter')
+            if obj.alerte:
+                raise ValidationError('Impossible de valider un document avec une alerte')
+
             filename="releve-qt-produite-%s.csv"%obj.name         
             with open("/tmp/%s"%filename, 'w', newline='') as csvfile:
                 spamwriter = csv.writer(csvfile, delimiter='\t') #,quotechar='|', quoting=csv.QUOTE_MINIMAL)
