@@ -105,11 +105,12 @@ class is_releve_qt_produite(models.Model):
             domain=[('type_id.code', 'in', ['PE','9000'])]
             equipements = self.env['is.equipement'].search(domain, order="numero_equipement")
             for equipement in equipements:
-                domain=[('presse_id', '=', equipement.id)]
-                arrets = self.env['is.presse.arret'].search(domain, order="id desc", limit=1)
-                for arret in arrets:
-                    tps_arret = (now - arret.date_heure).total_seconds()/3600
-                    arret.tps_arret = tps_arret
+                equipement.maj_duree_etat()
+                # domain=[('presse_id', '=', equipement.id)]
+                # arrets = self.env['is.presse.arret'].search(domain, order="id desc", limit=1)
+                # for arret in arrets:
+                #     tps_arret = (now - arret.date_heure).total_seconds()/3600
+                #     arret.tps_arret = tps_arret
         cr.commit()
 
 

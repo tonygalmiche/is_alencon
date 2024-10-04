@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from odoo import models,fields,api,tools
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from dateutil import tz
 import random
 import logging
 _logger = logging.getLogger(__name__)
-
-
 
 
 class is_of(models.Model):
@@ -133,6 +131,20 @@ class is_equipement(models.Model):
     _inherit = 'is.equipement'
 
 
+    def maj_duree_etat(self):
+        "Calcul de la durée de l'état en cours jusqu'à maintenant"
+        for obj in self:
+            now = datetime.now(tz=timezone.utc).replace(tzinfo=None)
+            #domain=[('type_id.code', 'in', ['PE','9000'])]
+            #equipements = self.env['is.equipement'].search(domain, order="numero_equipement")
+            #for equipement in equipements:
+            domain=[('presse_id', '=', obj.id)]
+            arrets = self.env['is.presse.arret'].search(domain, order="id desc", limit=1)
+            for arret in arrets:
+                tps_arret = (now - arret.date_heure).total_seconds()/3600
+                arret.tps_arret = tps_arret
+
+
     def get_color_indicateur(self,indicateur,val):
         color="gray"
         company = self.env.user.company_id
@@ -185,11 +197,14 @@ class is_equipement(models.Model):
 
         filtre=[
             ('ordre','>',0),
-            #('designation','like','85T'),
+            #('designation','like','50T3'),
         ]
         lines = self.env['is.equipement'].search(filtre, order="ordre,numero_equipement",limit=300)
         equipements=[]
         for line in lines:
+            line.maj_duree_etat()
+
+
             filtre=[
                 ('presse_id','=',line.id),
                 ('heure_debut', '!=', False),
