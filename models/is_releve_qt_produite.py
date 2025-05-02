@@ -51,27 +51,35 @@ class is_releve_qt_produite(models.Model):
                     alerte = "Date de début > Date de fin"
                 else:
                     alertes=[]
+                    # #** Test date_heure_debut *********************************
+                    # domain=[
+                    #     ('date_heure_debut','<', obj.date_heure_debut),
+                    #     ('date_heure_fin'  ,'>', obj.date_heure_debut),
+                    # ]
+                    # lines = self.env['is.releve.qt.produite'].search(domain)
+                    # for line in lines:
+                    #     if line.name not in alertes and line.name!=obj.name:
+                    #         alertes.append(line.name)
 
-                    #** Test date_heure_debut *********************************
+                    # #** Test date_heure_fin *********************************
+                    # domain=[
+                    #     ('date_heure_debut','<', obj.date_heure_fin),
+                    #     ('date_heure_fin'  ,'>', obj.date_heure_fin),
+                    # ]
+                    # lines = self.env['is.releve.qt.produite'].search(domain)
+                    # for line in lines:
+                    #     if line.name not in alertes and line.name!=obj.name:
+                    #         alertes.append(line.name)
+
+                    #TODO : Correction du 02/05/2025 suite bug avec code ci-dessus
                     domain=[
-                        ('date_heure_debut','<', obj.date_heure_debut),
+                        ('date_heure_debut','<', obj.date_heure_fin),
                         ('date_heure_fin'  ,'>', obj.date_heure_debut),
                     ]
                     lines = self.env['is.releve.qt.produite'].search(domain)
                     for line in lines:
                         if line.name not in alertes and line.name!=obj.name:
                             alertes.append(line.name)
-
-                    #** Test date_heure_fin *********************************
-                    domain=[
-                        ('date_heure_debut','<', obj.date_heure_fin),
-                        ('date_heure_fin'  ,'>', obj.date_heure_fin),
-                    ]
-                    lines = self.env['is.releve.qt.produite'].search(domain)
-                    for line in lines:
-                        if line.name not in alertes and line.name!=obj.name:
-                            alertes.append(line.name)
-
 
                     if alertes==[]:
                         alerte=False
