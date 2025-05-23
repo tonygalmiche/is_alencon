@@ -10,6 +10,9 @@ _logger = logging.getLogger(__name__)
 class is_of(models.Model):
     _inherit = 'is.of'
 
+    tx_operateur = fields.Float(string="Tx Opérateur", digits=(14,3), help="Champ 'Coef Opé' de Silog (CoefOpe)")
+
+
     def bilan_fin_of(self):
         cr = self._cr
 
